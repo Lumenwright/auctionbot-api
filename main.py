@@ -2,6 +2,12 @@ from flask import Flask
 from flask_restful import Api, reqparse
 import json
 import datetime
+import firebase_admin
+from firebase_admin import db
+
+firebase_admin.initialize_app()
+    # Get a database reference 
+ref = db.reference(url=dc.DB_URL)
 
 app = Flask(__name__)
 api = Api(app)
@@ -11,7 +17,7 @@ DATE_FORMAT = "%b%d%y-%H%M%S"
 """
 Arguments
 Structure of bot command: !bid 10
-[url]/bid?sender=$(sender)&bid=${1}
+https://basic-auction-bot.oa.r.appspot.com/bid?sender=$(sender)&bid=${1}
 """
 SENDER = "sender"
 BID = "bid"
@@ -46,7 +52,7 @@ def get():
     global current_largest_bid 
     current_largest_bid = bid if bid > current_largest_bid else current_largest_bid
 # return success or fail message
-    return "The current winning bid is: "+str(current_largest_bid), 200
+    return "The current winning bid is: "+str(current_largest_bid)+" pounds", 200
 
 @app.route(RESET_ENDPOINT)
 def reset():
