@@ -4,6 +4,7 @@ import json
 import datetime
 import firebase_admin
 from firebase_admin import db
+import dont_commit as dc
 
 firebase_admin.initialize_app()
     # Get a database reference 
@@ -17,7 +18,7 @@ DATE_FORMAT = "%b%d%y-%H%M%S"
 """
 Arguments
 Structure of bot command: !bid 10
-https://basic-auction-bot.oa.r.appspot.com/bid?sender=$(sender)&bid=${1}
+[url]bid?sender=$(sender)&bid=${1}
 """
 SENDER = "sender"
 BID = "bid"
@@ -56,6 +57,16 @@ def get():
 
 @app.route(RESET_ENDPOINT)
 def reset():
+    AUTH = "auth"
+    #authorize
+    parser = reqparse.RequestParser()
+    parser.add_argument(AUTH)
+    args = parser.parse_args()
+    token = args[AUTH]
+
+    if token != dc.TOKEN:
+        return "unauthorized", 401
+
     save_history()
     global current_largest_bid
     current_largest_bid = 0.0
